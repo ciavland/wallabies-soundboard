@@ -470,6 +470,24 @@ function initCtx(){
   reverb.connect(reverbSend);reverbSend.connect(ctx.destination);
 }
 
+// --- iOS Safari Audio Unlocker ---
+const unlockAudio = () => {
+  initCtx();
+  if (ctx.state === 'suspended') ctx.resume();
+  // Play a silent buffer to physically unlock iOS Audio Context
+  const buffer = ctx.createBuffer(1, 1, 22050);
+  const source = ctx.createBufferSource();
+  source.buffer = buffer;
+  source.connect(ctx.destination);
+  source.start(0);
+  window.removeEventListener('touchstart', unlockAudio);
+  window.removeEventListener('touchend', unlockAudio);
+  window.removeEventListener('click', unlockAudio);
+};
+window.addEventListener('touchstart', unlockAudio, { once: true });
+window.addEventListener('touchend', unlockAudio, { once: true });
+window.addEventListener('click', unlockAudio, { once: true });
+
 function vol(){return parseInt(document.getElementById('vol').value)/100;}
 
 function stopAll(){
