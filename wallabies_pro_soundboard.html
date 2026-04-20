@@ -252,20 +252,10 @@
     flex: 1;
     background: var(--gold);
     border-radius: 2px 2px 0 0;
-    animation: bounce 0.5s ease infinite alternate;
-  }
-
-  .bar:nth-child(1) { animation-delay: 0.1s; height: 30%; }
-  .bar:nth-child(2) { animation-delay: 0.3s; height: 60%; }
-  .bar:nth-child(3) { animation-delay: 0.0s; height: 100%; }
-  .bar:nth-child(4) { animation-delay: 0.4s; height: 80%; }
-  .bar:nth-child(5) { animation-delay: 0.2s; height: 40%; }
-  .bar:nth-child(6) { animation-delay: 0.5s; height: 90%; }
-  .bar:nth-child(7) { animation-delay: 0.1s; height: 50%; }
-
-  @keyframes bounce {
-    0% { transform: scaleY(0.3); transform-origin: bottom; }
-    100% { transform: scaleY(1); transform-origin: bottom; }
+    transform: scaleY(0.1);
+    transform-origin: bottom;
+    transition: transform 0.05s linear;
+    will-change: transform;
   }
 
   /* Keyboard hint toaster */
@@ -452,11 +442,31 @@ const SOUNDS=[
    ]}
 ];
 
-let ctx=null,activeOscs=[],loopTid=null,loopOn=false,currentBtn=null,reverb=null,reverbSend=null,clipper=null;
+let ctx=null,activeOscs=[],loopTid=null,loopOn=false,currentBtn=null,reverb=null,reverbSend=null,clipper=null,analyser=null,visTid=null;
+
+function drawVisualizer() {
+  if (!currentBtn || !analyser) {
+    if (visTid) cancelAnimationFrame(visTid);
+    return;
+  }
+  const data = new Uint8Array(analyser.frequencyBinCount);
+  analyser.getByteFrequencyData(data);
+  const bars = currentBtn.querySelectorAll('.bar');
+  if (bars.length) {
+    for (let i = 0; i < bars.length; i++) {
+        const val = data[i + 2] || 0;
+        const scale = 0.1 + (val / 255.0) * 0.9;
+        bars[i].style.transform = `scaleY(${scale})`;
+    }
+  }
+  visTid = requestAnimationFrame(drawVisualizer);
+}
 
 function initCtx(){
   if(ctx)return;
   ctx=new(window.AudioContext||window.webkitAudioContext)();
+  analyser=ctx.createAnalyser();
+  analyser.fftSize=32;
   clipper=ctx.createWaveShaper();
   const n=512,cv=new Float32Array(n);
   for(let i=0;i<n;i++){const x=i*2/n-1;cv[i]=x/(1+Math.abs(x)*1.8);}
@@ -501,13 +511,19 @@ function stopAll(){
   loopOn=false;clearTimeout(loopTid);
   activeOscs.forEach(o=>{try{o.stop();}catch(e){}});
   activeOscs=[];
-  if(currentBtn){currentBtn.classList.remove('playing');currentBtn=null;}
+  if(currentBtn){
+    currentBtn.querySelectorAll('.bar').forEach(b => b.style.transform = 'scaleY(0.1)');
+    currentBtn.classList.remove('playing');
+    currentBtn=null;
+  }
+  if(visTid){cancelAnimationFrame(visTid);visTid=null;}
 }
 
 function playSeq(seq,t0,isClutch=false){
   const ac=ctx,v=vol()*0.38;
   const master=ac.createGain();master.gain.value=v;
   master.connect(clipper);master.connect(reverb);
+  if(analyser) master.connect(analyser);
   
   // Leslie Effect (Vibrato)
   const lfo=ac.createOscillator(),lfog=ac.createGain();
@@ -562,6 +578,7 @@ function playKaChing(t0) {
   // The 8-Bit "Square" waves are extremely loud and piercing, reduce volume
   master.gain.value = vol() * 0.4; 
   master.connect(ac.destination); 
+  if(analyser) master.connect(analyser); 
   // No reverb for the authentic, dry NES sound!
   
   // Tone 1: B5 (approx 988 Hz) - The first extremely short collection click
@@ -607,10 +624,12 @@ function play(sound,btn){
 
   stopAll();
   currentBtn=btn;btn.classList.add('playing');
+  if(visTid) cancelAnimationFrame(visTid);
+  drawVisualizer();
   
   if(sound.id === 'victory') {
     playKaChing(ctx.currentTime);
-    setTimeout(()=>{if(currentBtn===btn){btn.classList.remove('playing');currentBtn=null;}}, 1500);
+    setTimeout(()=>{if(currentBtn===btn){currentBtn.querySelectorAll('.bar').forEach(b=>b.style.transform='scaleY(0.1)');btn.classList.remove('playing');currentBtn=null;if(visTid){cancelAnimationFrame(visTid);visTid=null;}}}, 1500);
     return;
   }
 
@@ -619,7 +638,7 @@ function play(sound,btn){
   if(!sound.loop){
     playSeq(sound.seq,ctx.currentTime, isClutch);
     const dur=Math.max(...sound.seq.map(([f,d,t])=>t+d));
-    setTimeout(()=>{if(currentBtn===btn){btn.classList.remove('playing');currentBtn=null;}},(dur+.4)*1000);
+    setTimeout(()=>{if(currentBtn===btn){currentBtn.querySelectorAll('.bar').forEach(b=>b.style.transform='scaleY(0.1)');btn.classList.remove('playing');currentBtn=null;if(visTid){cancelAnimationFrame(visTid);visTid=null;}}},(dur+.4)*1000);
   }else{
     loopOn=true;
     let next=ctx.currentTime;
