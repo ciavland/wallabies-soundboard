@@ -400,10 +400,17 @@ const SOUNDS=[
    ]},
 
   // === CROWD HYPE ===
-  {id:'pump', key: '6', title:'Pump-Up', when:'Build Energy', loop:false, loopDur:1.6,
+  {id:'pump', key: '6', title:'Charge! (Fanfare)', when:'Build Energy', loop:false, loopDur:2.0,
    seq:[
-     [N.C5,.12,0.00], [N.E5,.12,0.15], [N.G5,.12,0.30], [N.A5,.12,0.45], 
-     [N.G5,.12,0.60], [N.E5,.12,0.75], [N.C5,.50,0.90]
+     // The classic, universally hyped "Da-da-da-da-da-DAAAH!"
+     // Gespielt als fette Stadion-Fanfare (Doppel Oktave)
+     [N.G3,.12,0.00], [N.G4,.12,0.00],
+     [N.C4,.12,0.15], [N.C5,.12,0.15],
+     [N.E4,.12,0.30], [N.E5,.12,0.30],
+     [N.G4,.12,0.45], [N.G5,.12,0.45],
+     [N.E4,.12,0.60], [N.E5,.12,0.60],
+     // Massive explosion on the target note
+     [N.G4,.80,0.75], [N.G5,.80,0.75], [N.C6,.80,0.75]
    ]},
 
   {id:'letsgo', key: '7', title:"Let's Go Wallabies!", when:'Hype the Crowd', loop:true, loopDur:4.0,
