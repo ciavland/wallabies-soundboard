@@ -472,6 +472,12 @@ function initCtx(){
 
 // --- iOS Safari Audio Unlocker ---
 const unlockAudio = () => {
+  // Hack: Force iOS to use the 'Media' channel (Bluetooth) instead of 'Ringer'
+  const htmlAudio = document.createElement('audio');
+  htmlAudio.src = 'data:audio/wav;base64,UklGRigAAABXQVZFZm10IBIAAAABAAEARKwAAIhYAQACABAAAABkYXRhAgAAAAEA';
+  htmlAudio.playsInline = true;
+  htmlAudio.play().catch(()=>{});
+
   initCtx();
   if (ctx.state === 'suspended') ctx.resume();
   // Play a silent buffer to physically unlock iOS Audio Context
