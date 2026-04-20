@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NBA Organ Soundboard</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: system-ui, -apple-system, sans-serif; background: #111; color: #eee; padding: 1.5rem; max-width: 520px; margin: 0 auto; }
+  h1 { font-size: 18px; font-weight: 500; margin-bottom: 1.25rem; color: #fff; }
+  .vol-row { display: flex; align-items: center; gap: 10px; margin-bottom: 16px; }
+  .vol-row label { font-size: 12px; color: #aaa; white-space: nowrap; }
+  .vol-row span { font-size: 12px; color: #aaa; min-width: 32px; }
+  input[type=range] { flex: 1; accent-color: #3b82f6; }
+  .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .snd-btn {
+    padding: 16px 14px; border-radius: 12px;
+    border: 1.5px solid #333; background: #1a1a1a;
+    cursor: pointer; text-align: left; width: 100%;
+    transition: border-color .1s, transform .08s, background .1s; color: inherit;
+  }
+  .snd-btn:active { transform: scale(0.97); }
+  .snd-btn:hover { border-color: #555; background: #222; }
+  .snd-btn.playing { border-color: #3b82f6; background: #1e3a5f; }
+  .badge { font-size: 10px; padding: 2px 7px; border-radius: 10px; background: #2a2a2a; color: #888; display: inline-block; margin-bottom: 7px; }
+  .snd-btn.playing .badge { background: rgba(59,130,246,.25); color: #93c5fd; }
+  .snd-title { font-size: 14px; font-weight: 500; color: #f0f0f0; display: block; margin-bottom: 3px; }
+  .snd-when { font-size: 11px; color: #888; display: block; }
+  .stop-btn {
+    width: 100%; padding: 11px; margin-top: 10px;
+    background: #1a1a1a; border: 0.5px solid #333; border-radius: 8px;
+    font-size: 13px; color: #888; cursor: pointer;
+  }
+  .stop-btn:hover { color: #ccc; background: #222; }
+</style>
+</head>
+<body>
+<h1>NBA Organ Soundboard 🏀</h1>
+<div class="vol-row">
+  <label>Lautstärke</label>
+  <input type="range" min="0" max="100" value="78" id="vol" step="1">
+  <span id="vout">78%</span>
+</div>
+<div class="grid" id="grid"></div>
+<button class="stop-btn" id="stopbtn">Stopp</button>
+
+<script>
+const N={
+  C3:130.81,G3:196,A3:220,Bb3:233.08,B3:246.94,
+  C4:261.63,D4:293.66,E4:329.63,F4:349.23,G4:392,Ab4:415.3,A4:440,Bb4:466.16,B4:493.88,
+  C5:523.25,D5:587.33,Eb5:622.25,E5:659.25,F5:698.46,G5:783.99,A5:880,Bb5:932.33,C6:1046.5
+};
+
+const DB=[[1,.75],[2,.65],[3,.52],[4,.38],[5,.25],[6,.18],[8,.12],[.5,.12]];
+
+const SOUNDS=[
+  {id:'charge',title:'Charge!',when:'Nach Dunk / Block / Steal',loop:false,
+   seq:[[N.G4,.12,0],[N.C5,.12,.14],[N.E5,.12,.28],[N.G5,.12,.42],[N.E5,.12,.56],[N.G5,.7,.7]]},
+  {id:'defense',title:'Defense Loop',when:'Gegner greift an',loop:true,loopDur:1.56,
+   seq:[[N.D4,.1,0],[N.D4,.1,.13],[N.A4,.22,.38],[N.D4,.1,.72],[N.D4,.1,.85],[N.A4,.42,1.1]]},
+  {id:'pump',title:'Pump-Up',when:'Energie aufbauen',loop:true,loopDur:1.12,
+   seq:[[N.C5,.09,0],[N.E5,.09,.12],[N.G5,.09,.24],[N.A5,.09,.36],[N.G5,.09,.48],[N.E5,.09,.6],[N.C5,.36,.72]]},
+  {id:'heysong',title:'Hey Song',when:'Timeout / Halbzeit',loop:true,loopDur:2.9,
+   seq:[[N.E4,.1,0],[N.E4,.1,.14],[N.G4,.1,.28],[N.E4,.1,.42],[N.D4,.38,.56],
+        [N.G4,.1,1.05],[N.G4,.1,1.19],[N.A4,.1,1.33],[N.G4,.1,1.47],[N.F4,.38,1.61],
+        [N.E4,.1,2.1],[N.G4,.1,2.24],[N.A4,.1,2.38],[N.C5,.38,2.52]]},
+  {id:'victory',title:'Victory!',when:'Korb / gewonnenes Viertel',loop:false,
+   seq:[[N.C5,.09,0],[N.E5,.09,.1],[N.G5,.09,.2],[N.C6,.08,.3],[N.G5,.08,.4],[N.Ab4,.08,.5],[N.A4,.08,.6],[N.C5,.55,.7]]},
+  {id:'letsgo',title:"Let's Go!",when:'Spielbeginn / Einlaufen',loop:true,loopDur:.94,
+   seq:[[N.C5,.09,0],[N.E5,.09,.11],[N.G5,.18,.22],[N.E5,.09,.42],[N.C5,.18,.53],[N.G4,.09,.73],[N.C5,.16,.84]]}
+];
+
+let ctx=null,activeOscs=[],loopTid=null,loopOn=false,currentBtn=null,reverb=null,reverbSend=null,clipper=null;
+
+function initCtx(){
+  if(ctx)return;
+  ctx=new(window.AudioContext||window.webkitAudioContext)();
+  clipper=ctx.createWaveShaper();
+  const n=512,cv=new Float32Array(n);
+  for(let i=0;i<n;i++){const x=i*2/n-1;cv[i]=x/(1+Math.abs(x)*1.8);}
+  clipper.curve=cv;clipper.oversample='4x';
+  clipper.connect(ctx.destination);
+  reverb=ctx.createConvolver();
+  const sr=ctx.sampleRate,len=Math.floor(sr*2);
+  const buf=ctx.createBuffer(2,len,sr);
+  for(let c=0;c<2;c++){const d=buf.getChannelData(c);for(let i=0;i<len;i++)d[i]=(Math.random()*2-1)*Math.pow(1-i/len,2.2);}
+  reverb.buffer=buf;
+  reverbSend=ctx.createGain();reverbSend.gain.value=.22;
+  reverb.connect(reverbSend);reverbSend.connect(ctx.destination);
+}
+
+function vol(){return parseInt(document.getElementById('vol').value)/100;}
+
+function stopAll(){
+  loopOn=false;clearTimeout(loopTid);
+  activeOscs.forEach(o=>{try{o.stop();}catch(e){}});
+  activeOscs=[];
+  if(currentBtn){currentBtn.classList.remove('playing');currentBtn=null;}
+}
+
+function playSeq(seq,t0){
+  const ac=ctx,v=vol()*0.38;
+  const master=ac.createGain();master.gain.value=v;
+  master.connect(clipper);master.connect(reverb);
+  const lfo=ac.createOscillator(),lfog=ac.createGain();
+  lfo.frequency.value=7.2;lfog.gain.value=.1*v;
+  lfo.connect(lfog);lfog.connect(master.gain);
+  const lEnd=t0+Math.max(...seq.map(([f,d,t])=>t+d))+.3;
+  lfo.start(t0);lfo.stop(lEnd);activeOscs.push(lfo);
+  seq.forEach(([freq,dur,t])=>{
+    const s=t0+t,e=s+dur;
+    const env=ac.createGain();
+    env.gain.setValueAtTime(0,s);
+    env.gain.linearRampToValueAtTime(1,s+.014);
+    env.gain.setValueAtTime(1,e-.035);
+    env.gain.linearRampToValueAtTime(0,e);
+    env.connect(master);
+    const click=ac.createOscillator(),cg=ac.createGain();
+    click.frequency.value=freq*6;cg.gain.setValueAtTime(.25,s);
+    cg.gain.linearRampToValueAtTime(0,s+.008);
+    click.connect(cg);cg.connect(env);
+    click.start(s);click.stop(s+.015);activeOscs.push(click);
+    DB.forEach(([h,w])=>{
+      const osc=ac.createOscillator(),hg=ac.createGain();
+      hg.gain.value=w;osc.type='sine';osc.frequency.value=freq*h;
+      const osc2=ac.createOscillator(),hg2=ac.createGain();
+      hg2.gain.value=w*.35;osc2.type='sine';osc2.frequency.value=freq*h*(1+.0015);
+      osc.connect(hg);hg.connect(env);osc2.connect(hg2);hg2.connect(env);
+      osc.start(s);osc.stop(e+.07);osc2.start(s);osc2.stop(e+.07);
+      activeOscs.push(osc,osc2);
+    });
+  });
+}
+
+function play(sound,btn){
+  initCtx();
+  if(ctx.state==='suspended')ctx.resume();
+  stopAll();
+  currentBtn=btn;btn.classList.add('playing');
+  if(!sound.loop){
+    playSeq(sound.seq,ctx.currentTime);
+    const dur=Math.max(...sound.seq.map(([f,d,t])=>t+d));
+    setTimeout(()=>{if(currentBtn===btn){btn.classList.remove('playing');currentBtn=null;}},(dur+.4)*1000);
+  }else{
+    loopOn=true;
+    let next=ctx.currentTime;
+    function sched(){
+      if(!loopOn)return;
+      playSeq(sound.seq,next);
+      next+=sound.loopDur;
+      const delay=(next-ctx.currentTime-.12)*1000;
+      loopTid=setTimeout(sched,Math.max(50,delay));
+    }
+    sched();
+  }
+}
+
+const grid=document.getElementById('grid');
+SOUNDS.forEach(s=>{
+  const btn=document.createElement('button');
+  btn.className='snd-btn';
+  btn.innerHTML=`<span class="badge">${s.loop?'Loop ↺':'One-shot'}</span><span class="snd-title">${s.title}</span><span class="snd-when">${s.when}</span>`;
+  btn.addEventListener('click',()=>play(s,btn));
+  grid.appendChild(btn);
+});
+
+document.getElementById('stopbtn').addEventListener('click',stopAll);
+const vs=document.getElementById('vol'),vo=document.getElementById('vout');
+vs.addEventListener('input',()=>vo.textContent=vs.value+'%');
+</script>
+</body>
+</html>

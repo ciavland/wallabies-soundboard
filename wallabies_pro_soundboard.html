@@ -1,0 +1,629 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Wallabies Pro Soundboard</title>
+<style>
+  :root {
+    --bg-color: #0b1120; /* Deep Ocean Navy */
+    --panel-bg: rgba(17, 24, 39, 0.7);
+    --panel-border: rgba(255, 255, 255, 0.1);
+    --gold: #f5b041; /* Goldcoast Gold */
+    --gold-hover: #f1c40f;
+    --text-main: #f8f9fa;
+    --text-muted: #a0aec0;
+    --green-highlight: #2ed573;
+    --red-stop: #ff4757;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  
+  body { 
+    font-family: 'Inter', system-ui, -apple-system, sans-serif; 
+    background: radial-gradient(circle at 50% 0%, #1a253c 0%, var(--bg-color) 70%, #050810 100%);
+    color: var(--text-main); 
+    padding: 2rem; 
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .container {
+    max-width: 1000px;
+    width: 100%;
+  }
+
+  header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2.5rem;
+    padding: 1.5rem 2rem;
+    background: var(--panel-bg);
+    backdrop-filter: blur(12px);
+    border: 1px solid var(--panel-border);
+    border-radius: 20px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  }
+
+  .logo-area {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+  }
+
+  .logo {
+    width: 80px;
+    height: auto;
+    filter: drop-shadow(0 0 10px rgba(245, 176, 65, 0.3));
+  }
+
+  .title-group h1 { 
+    font-size: 28px; 
+    font-weight: 800; 
+    letter-spacing: -0.5px;
+    background: linear-gradient(to right, #fff, var(--gold));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin-bottom: 4px;
+  }
+
+  .title-group p {
+    font-size: 13px;
+    color: var(--text-muted);
+    font-weight: 500;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+  }
+
+  .master-controls {
+    display: flex;
+    align-items: center;
+    gap: 2rem;
+  }
+
+  .vol-row { 
+    display: flex; 
+    align-items: center; 
+    gap: 12px; 
+    background: rgba(0,0,0,0.3);
+    padding: 10px 20px;
+    border-radius: 12px;
+    border: 1px solid rgba(255,255,255,0.05);
+  }
+  
+  .vol-row label { font-size: 13px; font-weight: 600; color: var(--gold); text-transform: uppercase; letter-spacing: 0.5px;}
+  .vol-row span { font-size: 14px; font-weight: 700; color: #fff; min-width: 40px; text-align: right;}
+  
+  input[type=range] { 
+    width: 140px; 
+    accent-color: var(--gold); 
+    cursor: pointer;
+  }
+
+  .stop-btn {
+    padding: 14px 28px;
+    background: rgba(255, 71, 87, 0.1);
+    border: 1px solid rgba(255, 71, 87, 0.3);
+    border-radius: 12px;
+    font-size: 15px; 
+    font-weight: 700;
+    color: var(--red-stop); 
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .stop-btn:hover { 
+    background: var(--red-stop); 
+    color: #fff;
+    box-shadow: 0 0 20px rgba(255, 71, 87, 0.4);
+  }
+  .stop-btn:active { transform: scale(0.95); }
+
+  .grid { 
+    display: grid; 
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); 
+    gap: 20px; 
+  }
+
+  .snd-btn {
+    position: relative;
+    padding: 24px 20px; 
+    border-radius: 16px;
+    border: 1px solid var(--panel-border); 
+    background: var(--panel-bg);
+    backdrop-filter: blur(8px);
+    cursor: pointer; 
+    text-align: left; 
+    width: 100%;
+    transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1); 
+    color: inherit;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+  }
+
+  .snd-btn::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: linear-gradient(135deg, rgba(245, 176, 65, 0.1) 0%, transparent 100%);
+    opacity: 0;
+    transition: opacity 0.3s;
+  }
+
+  .snd-btn:hover { 
+    border-color: rgba(245, 176, 65, 0.4); 
+    transform: translateY(-3px);
+    box-shadow: 0 8px 25px rgba(0,0,0,0.4);
+  }
+  .snd-btn:hover::before { opacity: 1; }
+  .snd-btn:active { transform: translateY(1px) scale(0.98); }
+  
+  .snd-btn.playing { 
+    border-color: var(--gold); 
+    background: rgba(245, 176, 65, 0.15); 
+    box-shadow: 0 0 30px rgba(245, 176, 65, 0.2) inset, 0 8px 25px rgba(0,0,0,0.4);
+  }
+
+  .snd-btn.playing .badge { 
+    background: var(--gold); 
+    color: #000; 
+    font-weight: 700;
+  }
+
+  .btn-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 12px;
+    position: relative;
+    z-index: 1;
+  }
+
+  .badge { 
+    font-size: 11px; 
+    font-weight: 600;
+    padding: 4px 10px; 
+    border-radius: 12px; 
+    background: rgba(255,255,255,0.1); 
+    color: var(--text-muted); 
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    transition: all 0.3s;
+  }
+
+  .shortcut {
+    font-size: 12px;
+    font-family: monospace;
+    background: rgba(0,0,0,0.5);
+    color: var(--text-muted);
+    padding: 4px 8px;
+    border-radius: 6px;
+    border: 1px solid rgba(255,255,255,0.1);
+  }
+
+  .snd-btn.playing .shortcut {
+    border-color: var(--gold);
+    color: var(--gold);
+  }
+
+  .snd-title { 
+    font-size: 20px; 
+    font-weight: 700; 
+    color: #fff; 
+    margin-bottom: 4px; 
+    position: relative;
+    z-index: 1;
+  }
+  
+  .snd-when { 
+    font-size: 13px; 
+    color: var(--text-muted); 
+    position: relative;
+    z-index: 1;
+    font-weight: 400;
+  }
+
+  /* Audio spectrum visualizer mock for playing state */
+  .visualizer {
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    height: 30px;
+    display: flex;
+    align-items: flex-end;
+    gap: 3px;
+    padding: 0 10px;
+    opacity: 0;
+    transition: opacity 0.3s;
+  }
+
+  .snd-btn.playing .visualizer { opacity: 0.3; }
+
+  .bar {
+    flex: 1;
+    background: var(--gold);
+    border-radius: 2px 2px 0 0;
+    animation: bounce 0.5s ease infinite alternate;
+  }
+
+  .bar:nth-child(1) { animation-delay: 0.1s; height: 30%; }
+  .bar:nth-child(2) { animation-delay: 0.3s; height: 60%; }
+  .bar:nth-child(3) { animation-delay: 0.0s; height: 100%; }
+  .bar:nth-child(4) { animation-delay: 0.4s; height: 80%; }
+  .bar:nth-child(5) { animation-delay: 0.2s; height: 40%; }
+  .bar:nth-child(6) { animation-delay: 0.5s; height: 90%; }
+  .bar:nth-child(7) { animation-delay: 0.1s; height: 50%; }
+
+  @keyframes bounce {
+    0% { transform: scaleY(0.3); transform-origin: bottom; }
+    100% { transform: scaleY(1); transform-origin: bottom; }
+  }
+
+  /* Keyboard hint toaster */
+  .keyboard-hint {
+    position: fixed;
+    bottom: 2rem;
+    background: rgba(11, 17, 32, 0.9);
+    padding: 1rem 2rem;
+    border-radius: 30px;
+    border: 1px solid var(--panel-border);
+    backdrop-filter: blur(10px);
+    font-size: 13px;
+    color: var(--text-muted);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+    display: flex;
+    gap: 15px;
+    align-items: center;
+  }
+  .key-pill {
+    background: rgba(255,255,255,0.1);
+    color: #fff;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-family: monospace;
+    font-weight: bold;
+  }
+
+  @media (max-width: 768px) {
+    header { flex-direction: column; gap: 1.5rem; text-align: center; }
+    .master-controls { flex-direction: column; width: 100%; }
+    .vol-row, .stop-btn { width: 100%; justify-content: center; }
+    .keyboard-hint { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<div class="container">
+  <header>
+    <div class="logo-area">
+      <img src="https://wallabies.ch/cdn/shop/files/GCwallabies-logo.png" alt="Wallabies Logo" class="logo">
+      <div class="title-group">
+        <h1>Wallabies Soundboard</h1>
+        <p>Pro Gameday Control Center</p>
+      </div>
+    </div>
+    
+    <div class="master-controls">
+      <div class="vol-row">
+        <label>Master Vol</label>
+        <input type="range" min="0" max="100" value="85" id="vol" step="1">
+        <span id="vout">85%</span>
+      </div>
+      <button class="stop-btn" id="stopbtn">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect></svg>
+        Stop All
+      </button>
+    </div>
+  </header>
+
+  <div class="grid" id="grid"></div>
+</div>
+
+<div class="keyboard-hint">
+  <span>💡 <strong>Pro Tip:</strong> Use number keys <span class="key-pill">1</span> - <span class="key-pill">9</span> to play sounds instantly. Press <span class="key-pill">Space</span> or <span class="key-pill">Esc</span> to stop.</span>
+</div>
+
+<script>
+// --- Audio Engine ---
+const N={
+  C2:65.41, F2:87.31, G2:98.00, A2:110.00, B2:123.47,
+  C3:130.81,D3:146.83,E3:164.81,F3:174.61,G3:196,A3:220,Bb3:233.08,B3:246.94,
+  C4:261.63,D4:293.66,E4:329.63,F4:349.23,G4:392,Ab4:415.3,A4:440,Bb4:466.16,B4:493.88,
+  C5:523.25,D5:587.33,Eb5:622.25,E5:659.25,F5:698.46,G5:783.99,Ab5:830.61,A5:880,Bb5:932.33,C6:1046.5
+};
+
+// Drawbar organ settings [harmonic, weight]
+const DB=[[1,.75],[2,.65],[3,.52],[4,.38],[5,.25],[6,.18],[8,.12],[.5,.12]];
+
+// Sound Library
+const SOUNDS=[
+  {id:'charge', key: '1', title:'Dreier!', when:'Erfolgreicher 3-Punkte-Wurf', loop:false,
+   seq:[[N.G4,.12,0],[N.C5,.12,.14],[N.E5,.12,.28],[N.G5,.12,.42],[N.E5,.12,.56],[N.G5,.7,.7]]},
+  
+  {id:'defense', key: '2', title:'Defense Loop', when:'Gegner greift an', loop:true, loopDur:2.5,
+   seq:[
+     // Zwei identische, tiefe Orgel-Hits (monumentaler Sound)
+     [N.D3,.4,0], 
+     [N.D3,.4,0.5], 
+     // 3x "Clap" (Gleichmässiger Rhythmus, weiter auseinander)
+     [N.C5,.12,1.3], 
+     [N.C5,.12,1.6], 
+     [N.C5,.12,1.9]
+   ]},
+  
+  {id:'pump', key: '3', title:'Pump-Up', when:'Energie aufbauen', loop:false, loopDur:1.6,
+   seq:[
+     [N.C5,.12,0.00], [N.E5,.12,0.15], [N.G5,.12,0.30], [N.A5,.12,0.45], 
+     [N.G5,.12,0.60], [N.E5,.12,0.75], [N.C5,.50,0.90]
+   ]},
+  
+  {id:'heysong', key: '4', title:'Hey Song', when:'Timeout / Halbzeit', loop:true, loopDur:3.6,
+   seq:[
+        // Phrase 1 (Grundabstand 0.15s)
+        [N.E4,.1,0.0], [N.E4,.1,0.15], [N.G4,.1,0.30], [N.E4,.1,0.45], [N.D4,.4,0.60],
+        // Phrase 2 (Startet 1.2s nach Phrase 1)
+        [N.G4,.1,1.20], [N.G4,.1,1.35], [N.A4,.1,1.50], [N.G4,.1,1.65], [N.F4,.4,1.80],
+        // Phrase 3 (Startet 1.2s nach Phrase 2)
+        [N.E4,.1,2.40], [N.G4,.1,2.55], [N.A4,.1,2.70], [N.C5,.6,2.85]
+       ]},
+  
+  {id:'victory', key: '5', title:'Korb! (Ka-Ching)', when:'Punkte erzielt', loop:false,
+   seq:[
+     // "Ka-" (kurzes, dumpfes mechanisches Klacken)
+     [N.G4,.05,0], [N.C5,.05,0.05],
+     // "-Ching!" (heller, metallischer Kassen-Klingel-Akkord)
+     [N.E5,.7,0.1], [N.G5,.7,0.1], [N.C6,.7,0.1], [N.E5*2,.7,0.1] 
+   ]},
+  
+  {id:'letsgo', key: '6', title:"Let's Go!", when:'Spielbeginn / Einlaufen', loop:false, loopDur:1.0,
+   seq:[
+     [N.C5,.09,0], [N.C5,.09,.11], // "De-de..." (doppelter Anlauf)
+     [N.E5,.09,.22], [N.G5,.18,.33], [N.E5,.09,.53], [N.C5,.18,.64], [N.G4,.09,.84], [N.C5,.16,.95]
+   ]},
+
+  // --- NEW WALLABIES EXCLUSIVE SOUNDS ---
+  
+  {id:'wallaby_hop', key: '7', title:"Wallaby Hop", when:'Fastbreak / Tempo!', loop:true, loopDur: 2.0,
+   seq:[
+     [N.C5,.15,0], [N.G4,.15,0.25], [N.E4,.15,0.5], [N.C4,.2,0.75],
+     [N.D5,.15,1.0], [N.A4,.15,1.25], [N.F4,.15,1.5], [N.D4,.2,1.75]
+   ]},
+
+  {id:'goldcoast_wave', key: '8', title:"Goldcoast Wave", when:'Freiwurf (Spannung)', loop:true, loopDur: 2.4,
+   seq:[
+     // Rising chord progression (played as quick thick arpeggios simulating chords)
+     [N.C3,.4,0], [N.E3,.4,0.02], [N.G3,.4,0.04], [N.C4,.4,0.06],
+     [N.D3,.4,0.8], [N.F3,.4,0.82], [N.A3,.4,0.84], [N.D4,.4,0.86],
+     [N.E3,.4,1.6], [N.G3,.4,1.62], [N.B3,.4,1.64], [N.E4,.4,1.66]
+   ]},
+
+  {id:'clutch_time', key: '9', title:"Clutch Time", when:'Crunch Time (letzte Minute)', loop:true, loopDur: 1.2,
+   seq:[
+     [N.C2,.15,0], [N.G2,.15,0], 
+     [N.C2,.25,0.25], [N.G2,.25,0.25]
+   ]}
+];
+
+let ctx=null,activeOscs=[],loopTid=null,loopOn=false,currentBtn=null,reverb=null,reverbSend=null,clipper=null;
+
+function initCtx(){
+  if(ctx)return;
+  ctx=new(window.AudioContext||window.webkitAudioContext)();
+  clipper=ctx.createWaveShaper();
+  const n=512,cv=new Float32Array(n);
+  for(let i=0;i<n;i++){const x=i*2/n-1;cv[i]=x/(1+Math.abs(x)*1.8);}
+  clipper.curve=cv;clipper.oversample='4x';
+  clipper.connect(ctx.destination);
+  reverb=ctx.createConvolver();
+  const sr=ctx.sampleRate,len=Math.floor(sr*2);
+  const buf=ctx.createBuffer(2,len,sr);
+  for(let c=0;c<2;c++){const d=buf.getChannelData(c);for(let i=0;i<len;i++)d[i]=(Math.random()*2-1)*Math.pow(1-i/len,2.2);}
+  reverb.buffer=buf;
+  reverbSend=ctx.createGain();reverbSend.gain.value=.22;
+  reverb.connect(reverbSend);reverbSend.connect(ctx.destination);
+}
+
+function vol(){return parseInt(document.getElementById('vol').value)/100;}
+
+function stopAll(){
+  loopOn=false;clearTimeout(loopTid);
+  activeOscs.forEach(o=>{try{o.stop();}catch(e){}});
+  activeOscs=[];
+  if(currentBtn){currentBtn.classList.remove('playing');currentBtn=null;}
+}
+
+function playSeq(seq,t0,isClutch=false){
+  const ac=ctx,v=vol()*0.38;
+  const master=ac.createGain();master.gain.value=v;
+  master.connect(clipper);master.connect(reverb);
+  
+  // Leslie Effect (Vibrato)
+  const lfo=ac.createOscillator(),lfog=ac.createGain();
+  lfo.frequency.value=7.2;lfog.gain.value=.1*v;
+  lfo.connect(lfog);lfog.connect(master.gain);
+  const lEnd=t0+Math.max(...seq.map(([f,d,t])=>t+d))+.3;
+  lfo.start(t0);lfo.stop(lEnd);activeOscs.push(lfo);
+
+  seq.forEach(([freq,dur,t])=>{
+    const s=t0+t,e=s+dur;
+    const env=ac.createGain();
+    
+    // Softer attack for clutch/wave sounds
+    const attack = isClutch ? 0.05 : 0.014;
+    
+    env.gain.setValueAtTime(0,s);
+    env.gain.linearRampToValueAtTime(1,s+attack);
+    env.gain.setValueAtTime(1,e-.035);
+    env.gain.linearRampToValueAtTime(0,e);
+    env.connect(master);
+    
+    // Key click
+    if(!isClutch) {
+      const click=ac.createOscillator(),cg=ac.createGain();
+      click.frequency.value=freq*6;cg.gain.setValueAtTime(.25,s);
+      cg.gain.linearRampToValueAtTime(0,s+.008);
+      click.connect(cg);cg.connect(env);
+      click.start(s);click.stop(s+.015);activeOscs.push(click);
+    }
+
+    // Organ tons
+    DB.forEach(([h,w])=>{
+      const osc=ac.createOscillator(),hg=ac.createGain();
+      // Bass boost for clutch time
+      hg.gain.value= isClutch && h<2 ? w*2 : w; 
+      osc.type= isClutch && h===1 ? 'triangle' : 'sine';
+      osc.frequency.value=freq*h;
+      
+      const osc2=ac.createOscillator(),hg2=ac.createGain();
+      hg2.gain.value=w*.35;osc2.type='sine';osc2.frequency.value=freq*h*(1+.0015);
+      
+      osc.connect(hg);hg.connect(env);osc2.connect(hg2);hg2.connect(env);
+      osc.start(s);osc.stop(e+.07);osc2.start(s);osc2.stop(e+.07);
+      activeOscs.push(osc,osc2);
+    });
+  });
+}
+
+function playKaChing(t0) {
+  const ac = ctx;
+  const master = ac.createGain();
+  // Die 8-Bit "Square"-Waves sind extrem laut und durchdringend, wir reduzieren die Lautstärke
+  master.gain.value = vol() * 0.4; 
+  master.connect(ac.destination); 
+  // Kein Reverb für den echten, trockenen NES-Sound!
+  
+  // Ton 1: B5 (ca. 988 Hz) - Das erste extrem kurze Einsammel-Klicken
+  const osc1 = ac.createOscillator();
+  osc1.type = 'square';
+  osc1.frequency.value = 987.77;
+  
+  const env1 = ac.createGain();
+  env1.gain.setValueAtTime(0, t0);
+  env1.gain.linearRampToValueAtTime(1, t0 + 0.01);
+  env1.gain.setValueAtTime(1, t0 + 0.08); // Nur 80 Millisekunden lang spielen
+  env1.gain.linearRampToValueAtTime(0, t0 + 0.1);
+  
+  osc1.connect(env1); env1.connect(master);
+  osc1.start(t0); osc1.stop(t0 + 0.1);
+  
+  // Ton 2: E6 (ca. 1319 Hz) - Das höhere, befriedigende Ausklingen
+  const t1 = t0 + 0.08; // Startet fast direkt in Ton 1 hinein
+  const osc2 = ac.createOscillator();
+  osc2.type = 'square'; 
+  osc2.frequency.value = 1318.51;
+  
+  const env2 = ac.createGain();
+  env2.gain.setValueAtTime(0, t1);
+  env2.gain.linearRampToValueAtTime(1, t1 + 0.01);
+  env2.gain.exponentialRampToValueAtTime(0.01, t1 + 0.6); // Klassischer Ring-Out
+  
+  osc2.connect(env2); env2.connect(master);
+  osc2.start(t1); osc2.stop(t1 + 0.7);
+  
+  activeOscs.push(osc1, osc2);
+}
+
+function play(sound,btn){
+  initCtx();
+  if(ctx.state==='suspended')ctx.resume();
+  
+  // If clicking the same playing button, just stop it
+  if(btn.classList.contains('playing')) {
+    stopAll();
+    return;
+  }
+
+  stopAll();
+  currentBtn=btn;btn.classList.add('playing');
+  
+  if(sound.id === 'victory') {
+    playKaChing(ctx.currentTime);
+    setTimeout(()=>{if(currentBtn===btn){btn.classList.remove('playing');currentBtn=null;}}, 1500);
+    return;
+  }
+
+  const isClutch = sound.id === 'clutch_time' || sound.id === 'goldcoast_wave';
+
+  if(!sound.loop){
+    playSeq(sound.seq,ctx.currentTime, isClutch);
+    const dur=Math.max(...sound.seq.map(([f,d,t])=>t+d));
+    setTimeout(()=>{if(currentBtn===btn){btn.classList.remove('playing');currentBtn=null;}},(dur+.4)*1000);
+  }else{
+    loopOn=true;
+    let next=ctx.currentTime;
+    function sched(){
+      if(!loopOn)return;
+      playSeq(sound.seq,next, isClutch);
+      next+=sound.loopDur;
+      const delay=(next-ctx.currentTime-.12)*1000;
+      loopTid=setTimeout(sched,Math.max(50,delay));
+    }
+    sched();
+  }
+}
+
+// --- UI Initialization ---
+const grid=document.getElementById('grid');
+const buttonsMap = {};
+
+SOUNDS.forEach(s=>{
+  const btn=document.createElement('button');
+  btn.className='snd-btn';
+  btn.id = `btn_${s.key}`;
+  btn.innerHTML=`
+    <div class="btn-header">
+      <span class="badge">${s.loop?'Loop ↺':'One-shot'}</span>
+      <span class="shortcut">${s.key}</span>
+    </div>
+    <span class="snd-title">${s.title}</span>
+    <span class="snd-when">${s.when}</span>
+    <div class="visualizer">
+      <div class="bar"></div><div class="bar"></div><div class="bar"></div>
+      <div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div>
+    </div>
+  `;
+  btn.addEventListener('click',()=>play(s,btn));
+  grid.appendChild(btn);
+  buttonsMap[s.key] = { sound: s, element: btn };
+});
+
+document.getElementById('stopbtn').addEventListener('click',stopAll);
+
+const vs=document.getElementById('vol'),vo=document.getElementById('vout');
+vs.addEventListener('input',()=>vo.textContent=vs.value+'%');
+
+// --- Keyboard Shortcuts ---
+window.addEventListener('keydown', (e) => {
+  // Prevent tracking keydowns if focused on an input (though we only have range slider)
+  if(e.target.tagName === 'INPUT' && e.key !== 'Escape' && e.key !== ' ') return;
+  
+  if(e.key === ' ' || e.key === 'Escape') {
+    e.preventDefault();
+    stopAll();
+    // visual feedback for stop key
+    const stopbtn = document.getElementById('stopbtn');
+    stopbtn.style.transform = 'scale(0.95)';
+    setTimeout(()=> stopbtn.style.transform = 'none', 100);
+    return;
+  }
+
+  const mapping = buttonsMap[e.key];
+  if(mapping) {
+    e.preventDefault();
+    play(mapping.sound, mapping.element);
+  }
+});
+
+</script>
+</body>
+</html>
