@@ -604,7 +604,7 @@
     }
 
     function playSeq(seq, t0, isClutch = false) {
-      const ac = ctx, v = vol() * 0.98;
+      const ac = ctx, v = vol() * 0.38;
       const master = ac.createGain(); master.gain.value = v;
       master.connect(clipper); master.connect(reverb);
       if (analyser) master.connect(analyser);
