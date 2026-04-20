@@ -604,7 +604,7 @@
     }
 
     function playSeq(seq, t0, isClutch = false) {
-      const ac = ctx, v = vol() * 0.38;
+      const ac = ctx, v = vol() * 0.98;
       const master = ac.createGain(); master.gain.value = v;
       master.connect(clipper); master.connect(reverb);
       if (analyser) master.connect(analyser);
@@ -659,8 +659,8 @@
     function playKaChing(t0) {
       const ac = ctx;
       const master = ac.createGain();
-      // The 8-Bit "Square" waves are extremely loud and piercing, reduce volume
-      master.gain.value = vol() * 0.4;
+      // Die 8-Bit "Square" Wellen sollen extrem durchdringend sein (Piercing Sound für den Korb!)
+      master.gain.value = vol() * 1.3;
       master.connect(ac.destination);
       if (analyser) master.connect(analyser);
       // No reverb for the authentic, dry NES sound!
