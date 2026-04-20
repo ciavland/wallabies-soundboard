@@ -347,59 +347,73 @@ const DB=[[1,.75],[2,.65],[3,.52],[4,.38],[5,.25],[6,.18],[8,.12],[.5,.12]];
 
 // Sound Library
 const SOUNDS=[
-  {id:'charge', key: '1', title:'Dreier!', when:'Erfolgreicher 3-Punkte-Wurf', loop:false,
-   seq:[[N.G4,.12,0],[N.C5,.12,.14],[N.E5,.12,.28],[N.G5,.12,.42],[N.E5,.12,.56],[N.G5,.7,.7]]},
-  
-  {id:'defense', key: '2', title:'Defense Loop', when:'Gegner greift an', loop:true, loopDur:2.5,
+  {id:'charge', key: '1', title:'Three-Pointer!', when:'Successful 3-Point Shot', loop:false,
    seq:[
-     // Zwei identische, tiefe Orgel-Hits (monumentaler Sound)
+     // "One.. Two.. THREE!" - 3-Hit Combo
+     [N.C5,.15,0], 
+     [N.E5,.15,0.2], 
+     [N.G5,.7,0.4], [N.C6,.7,0.4] // Huge, high target chord
+   ]},
+  
+  {id:'defense', key: '2', title:'Defense! Defense!', when:'Opponent Attacks', loop:true, loopDur:2.5,
+   seq:[
+     // Two identical, deep organ hits (monumental sound)
      [N.D3,.4,0], 
      [N.D3,.4,0.5], 
-     // 3x "Clap" (Gleichmässiger Rhythmus, weiter auseinander)
+     // 3x "Clap" (Steady rhythm, spaced out)
      [N.C5,.12,1.3], 
      [N.C5,.12,1.6], 
      [N.C5,.12,1.9]
    ]},
   
-  {id:'pump', key: '3', title:'Pump-Up', when:'Energie aufbauen', loop:false, loopDur:1.6,
+  {id:'pump', key: '3', title:'Pump-Up', when:'Build Energy', loop:false, loopDur:1.6,
    seq:[
      [N.C5,.12,0.00], [N.E5,.12,0.15], [N.G5,.12,0.30], [N.A5,.12,0.45], 
      [N.G5,.12,0.60], [N.E5,.12,0.75], [N.C5,.50,0.90]
    ]},
   
-  {id:'heysong', key: '4', title:'Hey Song', when:'Timeout / Halbzeit', loop:true, loopDur:3.6,
+  {id:'heysong', key: '4', title:'Hey Song', when:'Timeout / Halftime', loop:true, loopDur:3.6,
    seq:[
-        // Phrase 1 (Grundabstand 0.15s)
+        // Phrase 1 (Base interval 0.15s)
         [N.E4,.1,0.0], [N.E4,.1,0.15], [N.G4,.1,0.30], [N.E4,.1,0.45], [N.D4,.4,0.60],
-        // Phrase 2 (Startet 1.2s nach Phrase 1)
+        // Phrase 2 (Starts 1.2s after Phrase 1)
         [N.G4,.1,1.20], [N.G4,.1,1.35], [N.A4,.1,1.50], [N.G4,.1,1.65], [N.F4,.4,1.80],
-        // Phrase 3 (Startet 1.2s nach Phrase 2)
+        // Phrase 3 (Starts 1.2s after Phrase 2)
         [N.E4,.1,2.40], [N.G4,.1,2.55], [N.A4,.1,2.70], [N.C5,.6,2.85]
        ]},
   
-  {id:'victory', key: '5', title:'Korb! (Ka-Ching)', when:'Punkte erzielt', loop:false,
+  {id:'victory', key: '5', title:'Basket! (Ka-Ching)', when:'Points Scored', loop:false,
    seq:[
-     // "Ka-" (kurzes, dumpfes mechanisches Klacken)
+     // "Ka-" (short, dull mechanical click)
      [N.G4,.05,0], [N.C5,.05,0.05],
-     // "-Ching!" (heller, metallischer Kassen-Klingel-Akkord)
+     // "-Ching!" (bright, metallic cash register ring)
      [N.E5,.7,0.1], [N.G5,.7,0.1], [N.C6,.7,0.1], [N.E5*2,.7,0.1] 
    ]},
   
-  {id:'letsgo', key: '6', title:"Let's Go!", when:'Spielbeginn / Einlaufen', loop:false, loopDur:1.0,
+  {id:'letsgo', key: '6', title:"Let's Go Wallabies!", when:'Hype the Crowd', loop:true, loopDur:4.0,
    seq:[
-     [N.C5,.09,0], [N.C5,.09,.11], // "De-de..." (doppelter Anlauf)
-     [N.E5,.09,.22], [N.G5,.18,.33], [N.E5,.09,.53], [N.C5,.18,.64], [N.G4,.09,.84], [N.C5,.16,.95]
+     // Bar 1: "Daaa-Daaa" (Beat 1 & Beat 2)
+     [N.C3,.35,0.0], [N.C4,.35,0.0],
+     [N.C3,.35,0.5], [N.C4,.35,0.5],
+     // "daa-daa-daa" (Beat 3, Beat 3.5, Beat 4)
+     [N.C3,.2,1.0], [N.C4,.2,1.0],
+     [N.C3,.2,1.25], [N.C4,.2,1.25],
+     [N.C3,.2,1.5], [N.C4,.2,1.5],
+     // Bar 2: "Daaa-Daaa" (Beat 1 & Beat 2)
+     [N.C3,.35,2.0], [N.C4,.35,2.0],
+     [N.C3,.4,2.5],  [N.C4,.4,2.5]
+     // Beat 3 & 4 (3.0s - 4.0s) pure pause for the perfect loop
    ]},
 
   // --- NEW WALLABIES EXCLUSIVE SOUNDS ---
   
-  {id:'wallaby_hop', key: '7', title:"Wallaby Hop", when:'Fastbreak / Tempo!', loop:true, loopDur: 2.0,
+  {id:'wallaby_hop', key: '7', title:"Wallaby Hop", when:'Fastbreak / Pace!', loop:true, loopDur: 2.0,
    seq:[
      [N.C5,.15,0], [N.G4,.15,0.25], [N.E4,.15,0.5], [N.C4,.2,0.75],
      [N.D5,.15,1.0], [N.A4,.15,1.25], [N.F4,.15,1.5], [N.D4,.2,1.75]
    ]},
 
-  {id:'goldcoast_wave', key: '8', title:"Goldcoast Wave", when:'Spannung', loop:true, loopDur: 2.4,
+  {id:'goldcoast_wave', key: '8', title:"Goldcoast Wave", when:'Tension / Free Throw', loop:true, loopDur: 2.4,
    seq:[
      // Rising chord progression (played as quick thick arpeggios simulating chords)
      [N.C3,.4,0], [N.E3,.4,0.02], [N.G3,.4,0.04], [N.C4,.4,0.06],
@@ -407,7 +421,7 @@ const SOUNDS=[
      [N.E3,.4,1.6], [N.G3,.4,1.62], [N.B3,.4,1.64], [N.E4,.4,1.66]
    ]},
 
-  {id:'clutch_time', key: '9', title:"Clutch Time", when:'Crunch Time (letzte Minute)', loop:true, loopDur: 1.2,
+  {id:'clutch_time', key: '9', title:"Clutch Time", when:'Crunch Time (Last Minute)', loop:true, loopDur: 1.2,
    seq:[
      [N.C2,.15,0], [N.G2,.15,0], 
      [N.C2,.25,0.25], [N.G2,.25,0.25]
@@ -497,12 +511,12 @@ function playSeq(seq,t0,isClutch=false){
 function playKaChing(t0) {
   const ac = ctx;
   const master = ac.createGain();
-  // Die 8-Bit "Square"-Waves sind extrem laut und durchdringend, wir reduzieren die Lautstärke
+  // The 8-Bit "Square" waves are extremely loud and piercing, reduce volume
   master.gain.value = vol() * 0.4; 
   master.connect(ac.destination); 
-  // Kein Reverb für den echten, trockenen NES-Sound!
+  // No reverb for the authentic, dry NES sound!
   
-  // Ton 1: B5 (ca. 988 Hz) - Das erste extrem kurze Einsammel-Klicken
+  // Tone 1: B5 (approx 988 Hz) - The first extremely short collection click
   const osc1 = ac.createOscillator();
   osc1.type = 'square';
   osc1.frequency.value = 987.77;
@@ -510,14 +524,14 @@ function playKaChing(t0) {
   const env1 = ac.createGain();
   env1.gain.setValueAtTime(0, t0);
   env1.gain.linearRampToValueAtTime(1, t0 + 0.01);
-  env1.gain.setValueAtTime(1, t0 + 0.08); // Nur 80 Millisekunden lang spielen
+  env1.gain.setValueAtTime(1, t0 + 0.08); // Play for just 80 milliseconds
   env1.gain.linearRampToValueAtTime(0, t0 + 0.1);
   
   osc1.connect(env1); env1.connect(master);
   osc1.start(t0); osc1.stop(t0 + 0.1);
   
-  // Ton 2: E6 (ca. 1319 Hz) - Das höhere, befriedigende Ausklingen
-  const t1 = t0 + 0.08; // Startet fast direkt in Ton 1 hinein
+  // Tone 2: E6 (approx 1319 Hz) - The higher, satisfying ring out
+  const t1 = t0 + 0.08; // Starts almost directly into tone 1
   const osc2 = ac.createOscillator();
   osc2.type = 'square'; 
   osc2.frequency.value = 1318.51;
@@ -525,7 +539,7 @@ function playKaChing(t0) {
   const env2 = ac.createGain();
   env2.gain.setValueAtTime(0, t1);
   env2.gain.linearRampToValueAtTime(1, t1 + 0.01);
-  env2.gain.exponentialRampToValueAtTime(0.01, t1 + 0.6); // Klassischer Ring-Out
+  env2.gain.exponentialRampToValueAtTime(0.01, t1 + 0.6); // Classic ring out
   
   osc2.connect(env2); env2.connect(master);
   osc2.start(t1); osc2.stop(t1 + 0.7);
