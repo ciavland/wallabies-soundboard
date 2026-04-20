@@ -347,15 +347,40 @@ const DB=[[1,.75],[2,.65],[3,.52],[4,.38],[5,.25],[6,.18],[8,.12],[.5,.12]];
 
 // Sound Library
 const SOUNDS=[
-  {id:'charge', key: '1', title:'Three-Pointer!', when:'Successful 3-Point Shot', loop:false,
+  // === SCORE & OFFENSE ===
+  {id:'victory', key: '1', title:'Basket! (Ka-Ching)', when:'Points Scored', loop:false,
+   seq:[
+     // "Ka-" (short, dull mechanical click)
+     [N.G4,.05,0], [N.C5,.05,0.05],
+     // "-Ching!" (bright, metallic cash register ring)
+     [N.E5,.7,0.1], [N.G5,.7,0.1], [N.C6,.7,0.1], [N.E5*2,.7,0.1] 
+   ]},
+  
+  {id:'charge', key: '2', title:'Three-Pointer!', when:'Successful 3-Point Shot', loop:false,
    seq:[
      // "One.. Two.. THREE!" - 3-Hit Combo
      [N.C5,.15,0], 
      [N.E5,.15,0.2], 
      [N.G5,.7,0.4], [N.C6,.7,0.4] // Huge, high target chord
    ]},
-  
-  {id:'defense', key: '2', title:'Defense! Defense!', when:'Opponent Attacks', loop:true, loopDur:2.5,
+
+  {id:'wallaby_hop', key: '3', title:"Wallaby Hop", when:'Fastbreak / Pace!', loop:true, loopDur: 2.0,
+   seq:[
+     // Bouncing Off-Beat Groove (wie ein echter "Hop", tief und treibend)
+     // Startet immer mit einem fetten, tiefen Bass und "hüpft" in einen kurzen Akkord
+     [N.C3,.15,0.0], 
+     [N.C4,.12,0.25], [N.E4,.12,0.25], // Der 1. Hop
+     [N.C3,.15,0.5], 
+     [N.E4,.12,0.75], [N.G4,.12,0.75], // Der 2. Hop
+     
+     [N.G2,.15,1.0], 
+     [N.G3,.12,1.25], [N.B3,.12,1.25], // Der 3. Hop
+     [N.G2,.15,1.5], 
+     [N.F3,.12,1.75], [N.A3,.12,1.75]  // Der 4. Hop
+   ]},
+
+  // === DEFENSE & TENSION ===
+  {id:'defense', key: '4', title:'Defense! Defense!', when:'Opponent Attacks', loop:true, loopDur:2.5,
    seq:[
      // Two identical, deep organ hits (monumental sound)
      [N.D3,.4,0], 
@@ -365,37 +390,23 @@ const SOUNDS=[
      [N.C5,.12,1.6], 
      [N.C5,.12,1.9]
    ]},
-  
-  {id:'pump', key: '3', title:'Pump-Up', when:'Build Energy', loop:false, loopDur:1.6,
+
+  {id:'goldcoast_wave', key: '5', title:"Goldcoast Wave", when:'Tension', loop:true, loopDur: 2.4,
+   seq:[
+     // Rising chord progression (played as quick thick arpeggios simulating chords)
+     [N.C3,.4,0], [N.E3,.4,0.02], [N.G3,.4,0.04], [N.C4,.4,0.06],
+     [N.D3,.4,0.8], [N.F3,.4,0.82], [N.A3,.4,0.84], [N.D4,.4,0.86],
+     [N.E3,.4,1.6], [N.G3,.4,1.62], [N.B3,.4,1.64], [N.E4,.4,1.66]
+   ]},
+
+  // === CROWD HYPE ===
+  {id:'pump', key: '6', title:'Pump-Up', when:'Build Energy', loop:false, loopDur:1.6,
    seq:[
      [N.C5,.12,0.00], [N.E5,.12,0.15], [N.G5,.12,0.30], [N.A5,.12,0.45], 
      [N.G5,.12,0.60], [N.E5,.12,0.75], [N.C5,.50,0.90]
    ]},
-  
-  {id:'heysong', key: '4', title:'Wallaby Nation', when:'The Goldcoast Anthem', loop:true, loopDur:4.0,
-   seq:[
-        // Seven Nation Army (Der unaufdringliche, aber fette Stadion-Hit)
-        // Gespielt in warmen Doppel-Oktaven (E3 & E4)
-        [N.E3,.5,0.0], [N.E4,.5,0.0],
-        
-        [N.E3,.15,1.0], [N.E4,.15,1.0],
-        [N.G3,.15,1.25], [N.G4,.15,1.25],
-        [N.E3,.15,1.5], [N.E4,.15,1.5],
-        [N.D3,.15,1.75], [N.D4,.15,1.75],
-        
-        [N.C3,.6,2.0], [N.C4,.6,2.0],
-        [N.B2,.6,3.0], [N.B3,.6,3.0]
-       ]},
-  
-  {id:'victory', key: '5', title:'Basket! (Ka-Ching)', when:'Points Scored', loop:false,
-   seq:[
-     // "Ka-" (short, dull mechanical click)
-     [N.G4,.05,0], [N.C5,.05,0.05],
-     // "-Ching!" (bright, metallic cash register ring)
-     [N.E5,.7,0.1], [N.G5,.7,0.1], [N.C6,.7,0.1], [N.E5*2,.7,0.1] 
-   ]},
-  
-  {id:'letsgo', key: '6', title:"Let's Go Wallabies!", when:'Hype the Crowd', loop:true, loopDur:4.0,
+
+  {id:'letsgo', key: '7', title:"Let's Go Wallabies!", when:'Hype the Crowd', loop:true, loopDur:4.0,
    seq:[
      // Bar 1: "Daaa-Daaa" (Beat 1 & Beat 2)
      [N.C3,.35,0.0], [N.C4,.35,0.0],
@@ -410,21 +421,21 @@ const SOUNDS=[
      // Beat 3 & 4 (3.0s - 4.0s) pure pause for the perfect loop
    ]},
 
-  // --- NEW WALLABIES EXCLUSIVE SOUNDS ---
-  
-  {id:'wallaby_hop', key: '7', title:"Wallaby Hop", when:'Fastbreak / Pace!', loop:true, loopDur: 2.0,
+  // === BIG MOMENTS ===
+  {id:'heysong', key: '8', title:'Wallaby Nation', when:'The Goldcoast Anthem', loop:true, loopDur:4.0,
    seq:[
-     [N.C5,.15,0], [N.G4,.15,0.25], [N.E4,.15,0.5], [N.C4,.2,0.75],
-     [N.D5,.15,1.0], [N.A4,.15,1.25], [N.F4,.15,1.5], [N.D4,.2,1.75]
-   ]},
-
-  {id:'goldcoast_wave', key: '8', title:"Goldcoast Wave", when:'Tension', loop:true, loopDur: 2.4,
-   seq:[
-     // Rising chord progression (played as quick thick arpeggios simulating chords)
-     [N.C3,.4,0], [N.E3,.4,0.02], [N.G3,.4,0.04], [N.C4,.4,0.06],
-     [N.D3,.4,0.8], [N.F3,.4,0.82], [N.A3,.4,0.84], [N.D4,.4,0.86],
-     [N.E3,.4,1.6], [N.G3,.4,1.62], [N.B3,.4,1.64], [N.E4,.4,1.66]
-   ]},
+        // Seven Nation Army (Der unaufdringliche, aber fette Stadion-Hit)
+        // Gespielt in warmen Doppel-Oktaven (E3 & E4)
+        [N.E3,.5,0.0], [N.E4,.5,0.0],
+        
+        [N.E3,.15,1.0], [N.E4,.15,1.0],
+        [N.G3,.15,1.25], [N.G4,.15,1.25],
+        [N.E3,.15,1.5], [N.E4,.15,1.5],
+        [N.D3,.15,1.75], [N.D4,.15,1.75],
+        
+        [N.C3,.6,2.0], [N.C4,.6,2.0],
+        [N.B2,.6,3.0], [N.B3,.6,3.0]
+       ]},
 
   {id:'clutch_time', key: '9', title:"Clutch Time", when:'Crunch Time (Last Minute)', loop:true, loopDur: 1.2,
    seq:[
