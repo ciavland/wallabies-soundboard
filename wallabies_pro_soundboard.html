@@ -347,7 +347,7 @@ const DB=[[1,.75],[2,.65],[3,.52],[4,.38],[5,.25],[6,.18],[8,.12],[.5,.12]];
 
 // Sound Library
 const SOUNDS=[
-  // === SCORE & OFFENSE ===
+  // === ROW 1: OFFENSE & TEAM ===
   {id:'victory', key: '1', title:'Basket! (Ka-Ching)', when:'Points Scored', loop:false,
    seq:[
      // "Ka-" (short, dull mechanical click)
@@ -364,22 +364,23 @@ const SOUNDS=[
      [N.G5,.7,0.4], [N.C6,.7,0.4] // Huge, high target chord
    ]},
 
-  {id:'wallaby_hop', key: '3', title:"Wallaby Hop", when:'Fastbreak / Pace!', loop:true, loopDur: 2.0,
+  {id:'letsgo', key: '3', title:"Let's Go Wallabies!", when:'Hype the Crowd', loop:true, loopDur:4.0,
    seq:[
-     // Bouncing Off-Beat Groove (wie ein echter "Hop", tief und treibend)
-     // Startet immer mit einem fetten, tiefen Bass und "hüpft" in einen kurzen Akkord
-     [N.C3,.15,0.0], 
-     [N.C4,.12,0.25], [N.E4,.12,0.25], // Der 1. Hop
-     [N.C3,.15,0.5], 
-     [N.E4,.12,0.75], [N.G4,.12,0.75], // Der 2. Hop
-     
-     [N.G2,.15,1.0], 
-     [N.G3,.12,1.25], [N.B3,.12,1.25], // Der 3. Hop
-     [N.G2,.15,1.5], 
-     [N.F3,.12,1.75], [N.A3,.12,1.75]  // Der 4. Hop
+     // Bar 1: "Daaa-Daaa" (Beat 1 & Beat 2)
+     [N.C3,.35,0.0], [N.C4,.35,0.0],
+     [N.C3,.35,0.5], [N.C4,.35,0.5],
+     // "daa-daa-daa" (Beat 3, Beat 3.5, Beat 4)
+     [N.C3,.2,1.0], [N.C4,.2,1.0],
+     [N.C3,.2,1.25], [N.C4,.2,1.25],
+     [N.C3,.2,1.5], [N.C4,.2,1.5],
+     // Bar 2: "Daaa-Daaa" (Beat 1 & Beat 2)
+     [N.C3,.35,2.0], [N.C4,.35,2.0],
+     [N.C3,.4,2.5],  [N.C4,.4,2.5]
+     // Beat 3 & 4 (3.0s - 4.0s) pure pause for the perfect loop
    ]},
 
-  // === DEFENSE & TENSION ===
+
+  // === ROW 2: FOR THE OPPONENT ===
   {id:'defense', key: '4', title:'Defense! Defense!', when:'Opponent Attacks', loop:true, loopDur:2.5,
    seq:[
      // "DE-FENSE" (Originaler Rhythmus, aber in tiefem C3/C4 Sound wie bei Let's Go)
@@ -399,8 +400,24 @@ const SOUNDS=[
      [N.E3,.4,1.6], [N.G3,.4,1.62], [N.B3,.4,1.64], [N.E4,.4,1.66]
    ]},
 
-  // === CROWD HYPE ===
-  {id:'pump', key: '6', title:'Charge! (Fanfare)', when:'Build Energy', loop:false, loopDur:2.0,
+  {id:'wallaby_hop', key: '6', title:"Wallaby Hop", when:'Make fun of the opponent', loop:true, loopDur: 2.0,
+   seq:[
+     // Bouncing Off-Beat Groove (wie ein echter "Hop", tief und treibend)
+     // Startet immer mit einem fetten, tiefen Bass und "hüpft" in einen kurzen Akkord
+     [N.C3,.15,0.0], 
+     [N.C4,.12,0.25], [N.E4,.12,0.25], // Der 1. Hop
+     [N.C3,.15,0.5], 
+     [N.E4,.12,0.75], [N.G4,.12,0.75], // Der 2. Hop
+     
+     [N.G2,.15,1.0], 
+     [N.G3,.12,1.25], [N.B3,.12,1.25], // Der 3. Hop
+     [N.G2,.15,1.5], 
+     [N.F3,.12,1.75], [N.A3,.12,1.75]  // Der 4. Hop
+   ]},
+
+
+  // === ROW 3: BIG MOMENTS ===
+  {id:'pump', key: '7', title:'Charge! (Fanfare)', when:'Build Energy', loop:false, loopDur:2.0,
    seq:[
      // The classic, universally hyped "Da-da-da-da-da-DAAAH!"
      // Gespielt als fette Stadion-Fanfare (Doppel Oktave)
@@ -413,22 +430,6 @@ const SOUNDS=[
      [N.G4,.80,0.75], [N.G5,.80,0.75], [N.C6,.80,0.75]
    ]},
 
-  {id:'letsgo', key: '7', title:"Let's Go Wallabies!", when:'Hype the Crowd', loop:true, loopDur:4.0,
-   seq:[
-     // Bar 1: "Daaa-Daaa" (Beat 1 & Beat 2)
-     [N.C3,.35,0.0], [N.C4,.35,0.0],
-     [N.C3,.35,0.5], [N.C4,.35,0.5],
-     // "daa-daa-daa" (Beat 3, Beat 3.5, Beat 4)
-     [N.C3,.2,1.0], [N.C4,.2,1.0],
-     [N.C3,.2,1.25], [N.C4,.2,1.25],
-     [N.C3,.2,1.5], [N.C4,.2,1.5],
-     // Bar 2: "Daaa-Daaa" (Beat 1 & Beat 2)
-     [N.C3,.35,2.0], [N.C4,.35,2.0],
-     [N.C3,.4,2.5],  [N.C4,.4,2.5]
-     // Beat 3 & 4 (3.0s - 4.0s) pure pause for the perfect loop
-   ]},
-
-  // === BIG MOMENTS ===
   {id:'heysong', key: '8', title:'Wallaby Nation', when:'The Goldcoast Anthem', loop:true, loopDur:4.0,
    seq:[
         // Seven Nation Army (Der unaufdringliche, aber fette Stadion-Hit)
