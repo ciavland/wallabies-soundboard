@@ -372,14 +372,19 @@ const SOUNDS=[
      [N.G5,.12,0.60], [N.E5,.12,0.75], [N.C5,.50,0.90]
    ]},
   
-  {id:'heysong', key: '4', title:'Hey Song', when:'Timeout / Halftime', loop:true, loopDur:3.6,
+  {id:'heysong', key: '4', title:'Stadium Anthem', when:'', loop:true, loopDur:4.0,
    seq:[
-        // Phrase 1 (Base interval 0.15s)
-        [N.E4,.1,0.0], [N.E4,.1,0.15], [N.G4,.1,0.30], [N.E4,.1,0.45], [N.D4,.4,0.60],
-        // Phrase 2 (Starts 1.2s after Phrase 1)
-        [N.G4,.1,1.20], [N.G4,.1,1.35], [N.A4,.1,1.50], [N.G4,.1,1.65], [N.F4,.4,1.80],
-        // Phrase 3 (Starts 1.2s after Phrase 2)
-        [N.E4,.1,2.40], [N.G4,.1,2.55], [N.A4,.1,2.70], [N.C5,.6,2.85]
+        // Seven Nation Army (Der unaufdringliche, aber fette Stadion-Hit)
+        // Gespielt in warmen Doppel-Oktaven (E3 & E4)
+        [N.E3,.5,0.0], [N.E4,.5,0.0],
+        
+        [N.E3,.15,1.0], [N.E4,.15,1.0],
+        [N.G3,.15,1.25], [N.G4,.15,1.25],
+        [N.E3,.15,1.5], [N.E4,.15,1.5],
+        [N.D3,.15,1.75], [N.D4,.15,1.75],
+        
+        [N.C3,.6,2.0], [N.C4,.6,2.0],
+        [N.B2,.6,3.0], [N.B3,.6,3.0]
        ]},
   
   {id:'victory', key: '5', title:'Basket! (Ka-Ching)', when:'Points Scored', loop:false,
